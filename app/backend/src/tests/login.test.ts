@@ -3,7 +3,6 @@ import * as chai from 'chai';
 import chaiHttp = require('chai-http');
 
 import { app } from '../app';
-import { Response } from 'superagent';
 
 import Users from '../database/models/UsersModel';
 import LoginController from '../controller/Login';
@@ -13,7 +12,7 @@ const { expect } = chai;
 
 describe('Quando o Login é feito com sucesso', () => {
   it('recebe a resposta 200 e o token', async () => {
-    const chaiHttpResponse: Response = await chai.request(app).post('/login')
+    const chaiHttpResponse = await chai.request(app).post('/login')
     .send({ email: 'admin@admin.com', password: 'secret_admin' })
 
     const { user: { username }, token } = chaiHttpResponse.body;
@@ -26,7 +25,7 @@ describe('Quando o Login é feito com sucesso', () => {
 
 describe('Quando o Login falhar', () => {
   it('por não ter sido enviado um email, recebe o status 400', async () => {
-    const chaiHttpResponse: Response = await chai.request(app).post('/login')
+    const chaiHttpResponse = await chai.request(app).post('/login')
     .send({ password: 'secret_admin' })
 
     expect(chaiHttpResponse.status).to.be.equal(400);
@@ -35,12 +34,12 @@ describe('Quando o Login falhar', () => {
 
 describe('Ao fazer uma requisição GET ao Login com um token válido', () => {
   it('retorna o papel do usuário', async () => {
-    const chaiHttpPOSTResponse: Response = await chai.request(app).post('/login')
+    const chaiHttpPOSTResponse = await chai.request(app).post('/login')
     .send({ email: 'admin@admin.com', password: 'secret_admin' })
 
     const { user: { username }, token } = chaiHttpPOSTResponse.body;
 
-    const chaiHttpGETResponse: Response = await chai.request(app).get('/login/validate').set('authorization', token)
+    const chaiHttpGETResponse = await chai.request(app).get('/login/validate').set('authorization', token)
 
     //set utilizado aqui para definir a chave authorization e passar o token
 
