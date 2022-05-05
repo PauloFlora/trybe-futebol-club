@@ -43,10 +43,7 @@ describe('Ao fazer uma requisição GET ao Login com um token válido', () => {
 
     //set utilizado aqui para definir a chave authorization e passar o token
 
-    const data = chaiHttpGETResponse.body;
-
-    console.log(data);
-    
+    const data = chaiHttpGETResponse.body;   
 
     expect(chaiHttpGETResponse.status).to.be.equal(200);
     expect(data).to.be.equal('admin');
