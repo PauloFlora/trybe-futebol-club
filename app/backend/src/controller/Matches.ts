@@ -15,7 +15,6 @@ export default class MatchesController {
 
   public static async create(req: Request, res: Response) {
     const { homeTeam, awayTeam, homeTeamGoals, awayTeamGoals } = req.body;
-    console.log(`Creating match with homeTeam: ${homeTeam} and awayTeam: ${awayTeam} `);
 
     const created = await Matches.create({
       homeTeam,
@@ -25,23 +24,26 @@ export default class MatchesController {
       inProgress: true,
     });
 
-    console.log('Result of match creation:', '_____________________________', created);
-
-    return res.status(201).json({ message: 'Match created' });
+    return res.status(201).json(created);
   }
 
   public static async endMatch(req: Request, res: Response) {
     const { id } = req.params;
-    console.log(`Ending Match with id: ${id}`);
 
-    if (!id) {
-      return res.status(400).json({ message: 'vai toma no cu' });
-    }
-
-    const endMatch = await Matches.update({ inProgress: false }, { where: { id } });
-
-    console.log('Result of ending match:', '_____________________________', endMatch);
+    await Matches.update({ inProgress: false }, { where: { id } });
 
     return res.status(200).json({ message: 'Match ended' });
+  }
+
+  public static async updateMatch(req: Request, res: Response) {
+    const { id } = req.params;
+    const { homeTeamGoals, awayTeamGoals } = req.body;
+
+    console.log('editando match');
+    console.log(homeTeamGoals, awayTeamGoals, id);
+
+    const editedMatch = await Matches.update({ homeTeamGoals, awayTeamGoals }, { where: { id } });
+
+    return res.status(200).json(editedMatch);
   }
 }

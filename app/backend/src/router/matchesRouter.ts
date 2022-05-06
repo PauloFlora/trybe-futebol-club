@@ -11,6 +11,7 @@ matchesRouter.post(
   MatchValidation.validateTeams,
   Matches.create,
 );
+matchesRouter.patch('/:id', Matches.updateMatch);
 matchesRouter.patch('/:id/finish', Matches.endMatch);
 
 export default matchesRouter;
