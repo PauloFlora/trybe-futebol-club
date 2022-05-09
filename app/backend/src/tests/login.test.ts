@@ -5,77 +5,57 @@ import chaiHttp = require('chai-http');
 import { app } from '../app';
 
 import { Response } from 'superagent';
+import Users from '../database/models/UsersModel';
 
 chai.use(chaiHttp);
 const { expect } = chai;
 
-// describe('Quando o Login é feito com sucesso', () => {
+const mock = {
+  id: 1,
+  username: 'admin',
+  role: 'admin',
+  password: '$2a$08$xi.Hxk1czAO0nZR..B393u10aED0RQ1N3PAEXQ7HxtLjKPEZBu.PW',
+  email: 'admin@admin.com'
+};
 
-//   it('recebe a resposta 200 e o token', async () => {
-//     const chaiHttpResponse = await chai.request(app).post('/login')
-//     .send({ email: 'admin@admin.com', password: 'secret_admin' })
+const mockToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiYWRtaW4iLCJpYXQiOjE2NTIxMzczODQsImV4cCI6MTY1Mjc0MjE4NH0.me-fAMygsPsd33SHme0cpFIeJ57g0-bXejQ54hVOfmE'
 
-//     const { user: { username }, token } = chaiHttpResponse.body;
+let UsersStub: sinon.SinonStub;
 
-//     expect(chaiHttpResponse.status).to.be.equal(200);
-//     expect(token).not.to.be.undefined;
-//     expect(username).to.be.equal('Admin');
-//   })
-// });
-
-// describe('Quando o Login falhar', () => {
-//   it('por não ter sido enviado um email, recebe o status 400', async () => {
-//     const chaiHttpResponse = await chai.request(app).post('/login')
-//     .send({ password: 'secret_admin' })
-
-//     expect(chaiHttpResponse.status).to.be.equal(400);
-//   })
-// });
-
-// describe('Ao fazer uma requisição GET ao Login com um token válido', () => {
-//   it('retorna o papel do usuário', async () => {
-//     const chaiHttpPOSTResponse = await chai.request(app).post('/login')
-//     .send({ email: 'admin@admin.com', password: 'secret_admin' })
-
-//     const { user: { username }, token } = chaiHttpPOSTResponse.body;
-
-//     const chaiHttpGETResponse = await chai.request(app).get('/login/validate').set('authorization', token)
-
-//     //set utilizado aqui para definir a chave authorization e passar o token
-
-//     const data = chaiHttpGETResponse.body;   
-
-//     expect(chaiHttpGETResponse.status).to.be.equal(200);
-//     expect(data).to.be.equal('admin');
-//   })
-// });
-
-
-describe('Requisição para a rota /login', () => {
-  it('sem o email, retorna status 400', () => {
-    chai.request(app)
-      .post('/login')
-      .send({ password: 'secret_admin' })
-      .end((err, res) => {
-        expect(res).to.have.status(400);
-      });
+describe('Ao fazer uma requisição POST à rota /login', () => {
+  beforeEach(function() {
+    UsersStub = sinon.stub(Users, 'findAll');
   });
+  afterEach(() => {
+    UsersStub.restore();
+  })
+  it('com email e password corretos, recebe a resposta 200 e o token', async () => {
+    UsersStub.resolves(mock as any);
+    const chaiHttpResponse = await chai.request(app).post('/login')
+    .send({ email: 'admin@admin.com', password: 'secret_admin' })
 
-  it('com um email incorreto, retorna status 401', () => {
-    chai.request(app)
-      .post('/login')
-      .send({ email: 'idk@admin.com', password: 'secret_admin' })
-      .end((err, res) => {
-        expect(res).to.have.status(401);
-      });
-  });
+    const { user: { username }, token } = chaiHttpResponse.body;
 
-  it('com usuário e senha corretos, retorna status 200', () => {
-    chai.request(app)
-      .post('/login')
-      .send({ email: 'admin@admin.com', password: 'secret_admin' })
-      .end((err, res) => {
-        expect(res).to.have.status(200);
-      });
-  });
+    expect(chaiHttpResponse.status).to.be.equal(200);
+    expect(token).not.to.be.undefined;
+    expect(username).to.be.equal('admin');
+  })
+  it('retorna o papel do usuário', async () => {
+    UsersStub.resolves(mock as any);
+  
+    //set utilizado aqui para definir a chave authorization e passar o token
+    const chaiHttpGETResponse = await chai.request(app).get('/login/validate').set('authorization', mockToken)
+  
+    const role = chaiHttpGETResponse.body;   
+  
+    expect(chaiHttpGETResponse.status).to.be.equal(200);
+    expect(role).to.be.equal('admin');
+  })
+  it('sem um email, recebe o status 400', async () => {
+    UsersStub.resolves(undefined);
+    const chaiHttpResponse = await chai.request(app).post('/login')
+    .send({ password: 'secret_admin' })
+  
+    expect(chaiHttpResponse.status).to.be.equal(400);
+  })
 });
