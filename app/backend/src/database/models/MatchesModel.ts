@@ -11,7 +11,7 @@ export default class Matches extends Model {
 
   public awayTeam!: number;
 
-  public awaTeamGoals!: number;
+  public awayTeamGoals!: number;
 
   public inProgress!: boolean;
 }

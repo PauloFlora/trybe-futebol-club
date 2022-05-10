@@ -39,9 +39,6 @@ export default class MatchesController {
     const { id } = req.params;
     const { homeTeamGoals, awayTeamGoals } = req.body;
 
-    console.log('editando match');
-    console.log(homeTeamGoals, awayTeamGoals, id);
-
     const editedMatch = await Matches.update({ homeTeamGoals, awayTeamGoals }, { where: { id } });
 
     return res.status(200).json(editedMatch);

@@ -24,7 +24,7 @@ let UsersStub: sinon.SinonStub;
 
 describe('Ao fazer uma requisição POST à rota /login', () => {
   beforeEach(function() {
-    UsersStub = sinon.stub(Users, 'findAll');
+    UsersStub = sinon.stub(Users, 'findOne');
   });
   afterEach(() => {
     UsersStub.restore();
