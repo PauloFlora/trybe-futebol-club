@@ -9,7 +9,7 @@ interface IResults {
   goalsFavor: number,
 }
 
-// solução encontrada com a ajuda de Gabriel Peralta
+// solução encontrada com a ajuda de Gabriel Peralta 
 
 export default class Leaderboard {
   public static async homeTeamScore(_req: Request, res: Response) {
